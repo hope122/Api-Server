@@ -60,7 +60,7 @@ class customersController
                             $adnminReg = $SysClass->UrlDataPost($APIUrl,$sendData);
                             $adnminReg = $SysClass->Json2Data($adnminReg["result"],false);
                             if($adnminReg["status"]){
-                                $action["data"] = $adnminReg[data];
+                                $action["data"] = $adnminReg["data"];
                                 $action["status"] = true;
                             }else{
                                 $action["msg"] = '管理員帳號註冊失敗，請重新嘗試';
@@ -90,7 +90,7 @@ class customersController
         $this->viewContnet['pageContent'] = $pageContent;
     }
 
-    //客戶資料註冊
+    //客戶資料列表
     public function cuslistAction()
     {
         $SysClass = new ctrlSystem;
@@ -104,10 +104,29 @@ class customersController
             $action = array();
             $action["status"] = false;
 
-            $strSQL = "select * from cl_customers t1 ";
+            $strSQL = "select t1.*, t2.uid as codeID from cl_customers t1 ";
             $strSQL .= "left join sys_code t2 on t1.uid = t2.customers_uid ";
             $data = $SysClass->QueryData($strSQL);
             if(!empty($data)){
+                // 與帳號中心取得管理員帳號資料
+
+                $APIUrl = $SysClass->GetAPIUrl('rsApiURL');
+                $APIUrl .= "adminRegisteredAPI/adminlist";
+
+                $sendData = array();
+                // 送出
+                $adnminList = $SysClass->UrlDataPost($APIUrl,$sendData);
+                $adnminList = $SysClass->Json2Data($adnminList["result"],false);
+
+                foreach ($data as $dataKey => $dataContent) {
+                
+                    foreach ($adnminList["data"] as $aListKey => $content) {
+                        if($content["sys_code_uid"] == $dataContent["codeID"]){
+                            $data[$dataKey]["admin"] = $content["user_ac"];
+                            unset($adnminList["data"][$aListKey]);
+                        }
+                    }
+                }
                 $action["data"] = $data;
                 $action["status"] = true;
             }else{
