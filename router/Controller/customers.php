@@ -103,7 +103,7 @@ class customersController
         try{
             $action = array();
             $action["status"] = false;
-
+            
             $strSQL = "select t1.*, t2.uid as codeID from cl_customers t1 ";
             $strSQL .= "left join sys_code t2 on t1.uid = t2.customers_uid ";
             $data = $SysClass->QueryData($strSQL);
