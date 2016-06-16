@@ -144,4 +144,61 @@ class customersController
         $SysClass = null;
         $this->viewContnet['pageContent'] = $pageContent;
     }
+
+    //客戶資料修改
+    public function modifyAction()
+    {
+        $SysClass = new ctrlSystem;
+        // 預設不連資料庫
+        // $SysClass->initialization();
+        // 連線指定資料庫
+        // $SysClass->initialization("設定檔[名稱]",true); -> 即可連資料庫
+        // 連線預設資料庫
+        $SysClass->initialization(null,true);
+        try{
+            $action = array();
+            $action["status"] = false;
+
+            if(!empty($_POST)){
+                if(!empty($_POST["uid"])){
+                    $name = $_POST["name"];
+                    $phone = $_POST["phone"];
+                    $address = $_POST["address"];
+                    $org_numbers = $_POST["org_numbers"];
+                    $principal_name = $_POST["principal_name"];
+                    $principal_phone = $_POST["principal_phone"];
+                    $principal_mail = $_POST["principal_mail"];
+                    if($name and $phone and $address){
+                        $strSQL = "update cl_customers set name='".$name."',phone='".$phone."',address='".$address."',org_numbers='".$org_numbers."',principal_name='".$principal_name."',principal_phone='".$principal_phone."',principal_mail='".$principal_mail."' ";
+                        $strSQL .= "where uid = ".$_POST["uid"]." ";
+
+                        if($SysClass->Execute($strSQL)){
+                            $action["msg"] = "修改成功";
+                            $action["status"] =true;
+                        }else{
+                            $action["msg"] = "修改失敗";
+                        }
+                    }else{
+                        $action["msg"] = "必要參數不可為空";
+
+                    }
+                }else{
+                    $action["msg"] = "未設定ID";
+
+                }
+            }else{
+                $action["msg"] = "參數不可為空";
+            }
+            
+            $pageContent = $SysClass->Data2Json($action);
+        }catch(Exception $error){
+            //依據Controller, Action補上對應位置, $error->getMessage()為固定部份
+            $SysClass->WriteLog("SupplyController", "editorAction", $error->getMessage());
+        }
+        //關閉資料庫連線
+        // $SysClass->DBClose();
+        //釋放
+        $SysClass = null;
+        $this->viewContnet['pageContent'] = $pageContent;
+    }
 }
