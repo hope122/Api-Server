@@ -31,6 +31,16 @@ return array(
         //     'index' => 'POST'
         // )
     ),
+    "workflow" => array(
+        'controller' => 'workflow',
+        'action' => 'index',
+        // 針對全部呼叫方法
+        // 'method' => 'GET'
+        // 針對單一Action呼叫方法
+        // 'ActionMethod' => array(
+        //     'index' => 'POST'
+        // )
+    ),
 );
 
 ?>
