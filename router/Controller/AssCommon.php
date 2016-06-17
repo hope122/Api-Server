@@ -44,15 +44,16 @@ class AssCommonController
             $action = array();
             $action["Status"] = false;
 
-            $strSQL = "select * from ass_common t1 ";
+            $strSQL = "select t2.* from ass_user t1 ";
+            $strSQL = "left join ass_common t2 on t1.cmid = t2.uid ";
             // $strSQL .= "left join ass_common_address t2 on t1.uid = t2.cmid ";
             $strSQL .= "where 1 ";
 
             if(!empty($_GET["iUid"])){
-                $strSQL .= "and t1.uid = '".$_GET["iUid"]."' "; 
+                $strSQL .= "and t2.uid = '".$_GET["iUid"]."' "; 
             }
             if(!empty($_GET["sSid"])){
-                $strSQL .= "and t1.sid = '".$_GET["sSid"]."' "; 
+                $strSQL .= "and t2.sid = '".$_GET["sSid"]."' "; 
             }
             // if(!empty($_GET["sys_code"])){
             $strSQL .= "and t1.sys_code_id = '".$_GET["sys_code"]."' "; 
@@ -98,8 +99,8 @@ class AssCommonController
                 $sex = $_POST["sex"];
                 $sys_code_id = $_POST["sys_code"];
                 if($name and $sid and $birthday and $sex and $sys_code_id){
-                    $strSQL = "insert into ass_common(name,sid,birthday,sex,sys_code_id) ";
-                    $strSQL .= "values('".$name."','".$sid."','".$birthday."','".$sex."','".$sys_code_id."'); ";
+                    $strSQL = "insert into ass_common(name,sid,birthday,sex) ";
+                    $strSQL .= "values('".$name."','".$sid."','".$birthday."','".$sex."'); ";
 
                     if($SysClass->Execute($strSQL)){
 
