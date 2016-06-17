@@ -45,7 +45,7 @@ class AssCommonController
             $action["Status"] = false;
 
             $strSQL = "select t2.* from ass_user t1 ";
-            $strSQL = "left join ass_common t2 on t1.cmid = t2.uid ";
+            $strSQL .= "left join ass_common t2 on t1.cmid = t2.uid ";
             // $strSQL .= "left join ass_common_address t2 on t1.uid = t2.cmid ";
             $strSQL .= "where 1 ";
 
@@ -59,7 +59,7 @@ class AssCommonController
             $strSQL .= "and t1.sys_code_id = '".$_GET["sys_code"]."' "; 
             // }
 
-            $strSQL .= "order by t1.uid asc ";
+            $strSQL .= "order by t2.uid asc ";
             $data = $SysClass->QueryData($strSQL);
 
             if(!empty($data)){
@@ -67,6 +67,7 @@ class AssCommonController
                 $action["Status"] = true;
             }else{
                 $action["msg"] = '沒有資料';
+                $action["SQL"] = $strSQL;
             }
             $pageContent = $SysClass->Data2Json($action);
         }catch(Exception $error){
