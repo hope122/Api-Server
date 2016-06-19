@@ -4,7 +4,7 @@
 */
 use SystemCtrl\ctrlSystem;
 
-class AssUserController
+class AssPositionController
 {
     public function indexAction()
     {
@@ -31,8 +31,8 @@ class AssUserController
         $this->viewContnet['pageContent'] = $pageContent;
     }
 
-    // 取得自然人資料
-    public function GetData_AssUserAction(){
+    // 取得職務資料
+    public function GetData_AssPositionAction(){
         $SysClass = new ctrlSystem;
         // 預設不連資料庫
         // $SysClass->initialization();
@@ -44,19 +44,19 @@ class AssUserController
             $action = array();
             $action["Status"] = false;
 
-            $strSQL = "select * from ass_user ";
-            // $strSQL .= "left join ass_common_address t2 on t1.uid = t2.cmid ";
+            $strSQL = "select * from ass_position t1 ";
+            $strSQL .= "left join ass_type_position t2 on t1.psid = t2.uid ";
             $strSQL .= "where 1 ";
 
             if(!empty($_GET["iUid"])){
-                $strSQL .= "and uid = '".$_GET["iUid"]."' "; 
+                $strSQL .= "and t1.uid = '".$_GET["iUid"]."' "; 
             }
-
+            $strSQL .= "and t1.ofid = '".$_GET["iOfid"]."' "; 
             // if(!empty($_GET["sys_code"])){
-            $strSQL .= "and sys_code_id = '".$_GET["sys_code"]."' "; 
+            $strSQL .= "and t1.sys_code_id = '".$_GET["sys_code"]."' "; 
             // }
 
-            $strSQL .= "order by uid asc ";
+            $strSQL .= "order by t1.uid asc ";
             $data = $SysClass->QueryData($strSQL);
 
             if(!empty($data)){
@@ -198,7 +198,7 @@ class AssUserController
                 // 修改職務&部門
                 $orgid = $_POST["orgid"];
                 $posid = ($_POST["posid"]) ? $_POST["posid"]:"NULL";
-                $sys_code_id = $_POST["sys_code"];
+                $sys_code_id = $_POST["sys_code_id"];
                 
                 if($uid and $orgid and $sys_code_id){
                     // 改部門方面的
@@ -211,7 +211,6 @@ class AssUserController
 
                     }else{
                         $action["msg"] = '修改失敗';
-                        $action["msg"] = $strSQL;
                     }
                 }else{
                     $action["msg"] = '參數不可為空';

@@ -71,6 +71,26 @@ return array(
         //     'index' => 'POST'
         // )
     ),
+    "AssOrg" => array(
+        'controller' => 'AssOrg',
+        'action' => 'index',
+        // 針對全部呼叫方法
+        // 'method' => 'GET'
+        // 針對單一Action呼叫方法
+        // 'ActionMethod' => array(
+        //     'index' => 'POST'
+        // )
+    ),
+    "AssPosition" => array(
+        'controller' => 'AssPosition',
+        'action' => 'index',
+        // 針對全部呼叫方法
+        // 'method' => 'GET'
+        // 針對單一Action呼叫方法
+        // 'ActionMethod' => array(
+        //     'index' => 'POST'
+        // )
+    ),
 );
 
 ?>
