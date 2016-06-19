@@ -44,8 +44,9 @@ class AssPositionController
             $action = array();
             $action["Status"] = false;
 
-            $strSQL = "select * from ass_position t1 ";
+            $strSQL = "select t1.*,t2.name,t3.name as ofname from ass_position t1 ";
             $strSQL .= "left join ass_type_position t2 on t1.psid = t2.uid ";
+            $strSQL .= "left join ass_type_office t3 on t1.ofid = t3.uid ";
             $strSQL .= "where 1 ";
 
             if(!empty($_GET["iUid"])){
@@ -64,7 +65,7 @@ class AssPositionController
                 $action["Status"] = true;
             }else{
                 $action["msg"] = '沒有資料';
-                // $action["SQL"] = $strSQL;
+                $action["SQL"] = $strSQL;
             }
             $pageContent = $SysClass->Data2Json($action);
         }catch(Exception $error){

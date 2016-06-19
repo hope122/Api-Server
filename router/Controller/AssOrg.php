@@ -31,7 +31,7 @@ class AssOrgController
         $this->viewContnet['pageContent'] = $pageContent;
     }
 
-    // 取得自然人資料
+    // 取得組織資料
     public function GetData_AssOrgAction(){
         $SysClass = new ctrlSystem;
         // 預設不連資料庫

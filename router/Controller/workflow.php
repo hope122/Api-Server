@@ -28,22 +28,43 @@ class workflowController
                 $menuCode = $_POST["menuCode"];
                 $sysCode = $_POST["sysCode"];
                 $user = $_POST["user"];
-                $strSQL = "";
-                $wfCode = base64_encode(time());
-                $wfCode = str_replace("==", "", $wfCode);
-                foreach ($layer as $layerIndex => $value) {
-                    $idArr = explode(",", $value);
-                    foreach ($idArr as $idContent) {
-                        $strSQL .= "insert into wf_option(title,layer,data_uid,creat_user,sys_code,menu_code,seq,layer_seq,wf_code) ";
-                        $strSQL .= "values('".$title."','".$layerIndex."','".$idContent."','".$user."','".$sysCode."','".$menuCode."','0','0','".$wfCode."'); ";
+                
+                // 新增流程名稱
+                if($title){
+                    $strSQL = "insert into wf_title(name) values('".$title."');";
+                    $SysClass->Execute($strSQL);
+
+                    $titleID = $SysClass->NewInsertID();
+                    // 創建流程設定
+                    $strSQL = "insert into wf_option(title_id , creat_user, sys_code_id, menu_code) ";
+                    $strSQL .= "values('".$titleID."','".$user."','".$sysCode."','".$menuCode."');";
+                    $SysClass->Execute($strSQL);
+                    $wfID = $SysClass->NewInsertID();
+
+                    $strSQL = "";
+                    // $wfCode = base64_encode(time());
+                    // $wfCode = str_replace("==", "", $wfCode);
+                    foreach ($layer as $layerIndex => $value) {
+                        $idArr = explode(",", $value);
+                        foreach ($idArr as $idContent) {
+                            $strSQL .= "insert into wf_layer_data(wf_uid,layer,data_uid,seq) ";
+                            $strSQL .= "values('".$wfID."','".$layerIndex."','".$idContent."',0); ";
+                        }
                     }
-                }
-                if($SysClass->Execute($strSQL)){
-                    $action["msg"] = "新增流程成功";
-                    $action["status"] = true;
+                    // $action["sql"] = $strSQL;
+                    if($SysClass->Execute($strSQL)){
+                        $action["msg"] = "新增流程成功";
+                        $action["data"] = $wfID;
+                        $action["status"] = true;
+                    }else{
+                        $action["msg"] = "無法新增流程";
+                    }
                 }else{
-                    $action["msg"] = "無法新增流程";
+                    $action["msg"] = "沒有輸入流程名稱";
+
                 }
+                
+                
             }else{
                 $action["msg"] = '沒有資料';
             }
