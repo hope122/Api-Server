@@ -6,8 +6,55 @@ use SystemCtrl\ctrlSystem;
 
 class workflowController
 {
+    public function getWorkFlowAction(){
+        $SysClass = new ctrlSystem;
+        // 預設不連資料庫
+        // $SysClass->initialization();
+        // 連線指定資料庫
+        // $SysClass->initialization("設定檔[名稱]",true); -> 即可連資料庫
+        // 連線預設資料庫
+        $SysClass->initialization(null,true);
+        try{
+            $action = array();
+            $action["status"] = false;
+            if(!empty($_GET)){
+                $sys_code = $_GET["sys_code"];
+                $menu_code = $_GET["menu_code"];
+                $uid = $_GET["uid"];
 
-    //客戶資料註冊
+                $strSQL = "select t1.uid,t2.name from wf_option t1 ";
+                $strSQL .= "left join wf_title t2 on t1.title_id = t2.uid ";
+                $strSQL .= "where t1.sys_code_id = '".$sys_code."' and t1.menu_code = '".$menu_code."' ";
+                if($uid){
+                    $strSQL .= "and t1.uid = ".$uid." ";
+                }
+                $strSQL .= "order by t1.uid asc ";
+
+                $data = $SysClass->QueryData($strSQL);
+
+                if(!empty($data)){
+                    $action["data"] = $data;
+                    $action["status"] = true;
+                }else{
+                    $action["msg"] = "無資料";
+                    $action["sql"] = $strSQL;
+                }
+            }else{
+                $action["msg"] = "參數不可為空";
+            }
+            $pageContent = $SysClass->Data2Json($action);
+        }catch(Exception $error){
+            //依據Controller, Action補上對應位置, $error->getMessage()為固定部份
+            $SysClass->WriteLog("SupplyController", "editorAction", $error->getMessage());
+        }
+        //關閉資料庫連線
+        // $SysClass->DBClose();
+        //釋放
+        $SysClass = null;
+        $this->viewContnet['pageContent'] = $pageContent;
+    }
+
+    //work flow註冊
     public function insertWorkFlowAction()
     {
         $SysClass = new ctrlSystem;

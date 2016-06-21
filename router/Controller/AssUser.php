@@ -180,6 +180,92 @@ class AssUserController
         return $userReg;
     }
 
+    // 新增自然人資料
+    public function Insert_AdminAssUserAction(){
+        $SysClass = new ctrlSystem;
+        // 預設不連資料庫
+        // $SysClass->initialization();
+        // 連線指定資料庫
+        // $SysClass->initialization("設定檔[名稱]",true); -> 即可連資料庫
+        // 連線預設資料庫
+        $SysClass->initialization(null,true);
+        try{
+            $action = array();
+            $action["Status"] = false;
+            if(!empty($_POST)){
+                $uuid = $_POST["uuid"];
+                $cmid = $_POST["cmid"];
+                $sys_code_id = $_POST["sys_code"];
+                $datec = date("Y/m/d");
+
+                if($uuid and $cmid and $sys_code_id){
+                    // 先檢查有沒有新增過，一個系統僅允許一筆管理者資料
+                    $strSQL = "select * from ass_user where sys_code_id = '".$sys_code_id."' and is_admin = 1 ";
+                    $data = $SysClass->QueryData($strSQL);
+
+                    // 沒有新增，進行新增
+                    if(empty($data)){
+                        $strSQL = "insert into ass_user(cmid, datec, sys_code_id, is_admin) ";
+                        $strSQL .= "values('".$cmid."','".$datec."','".$sys_code_id."', 1); ";
+                    
+                        if($SysClass->Execute($strSQL)){
+
+                            $newID = $SysClass->NewInsertID();
+                        // 向帳號中心彙整管理員帳號
+                            $userReg = $this->matchAdmin($SysClass, $uuid, $newID);
+
+                            if($userReg["status"]){
+                                $action["Data"] = $newID;
+                                $action["Status"] = true;
+                            }else{
+                                $action["msg"] = '帳號註冊失敗，請重新嘗試';
+                                $action["accenter_msg"] = $userReg["msg"];
+                            }
+
+                        }else{
+                            $action["msg"] = '新增失敗';
+                            $action["sql"] = $strSQL;
+                        }
+                    }else{
+                        $action["msg"] = "已新增過admin資料";
+                    }
+                }else{
+                    $action["msg"] = '參數不可為空';
+
+                }
+            }else{
+                $action["msg"] = '參數不可為空';
+
+            }
+            $pageContent = $SysClass->Data2Json($action);
+        }catch(Exception $error){
+            //依據Controller, Action補上對應位置, $error->getMessage()為固定部份
+            $SysClass->WriteLog("SupplyController", "editorAction", $error->getMessage());
+        }
+        //關閉資料庫連線
+        // $SysClass->DBClose();
+        //釋放
+        $SysClass = null;
+        $this->viewContnet['pageContent'] = $pageContent;
+    }
+
+    // 彙整Admin資料
+    private function matchAdmin($SysClass, $uuid, $userID){
+        // 向帳號中心註冊一般使用者帳號
+        $APIUrl = $SysClass->GetAPIUrl('rsApiURL');
+        $APIUrl .= "adminRegisteredAPI/match";
+
+        $sendData = array();
+        $sendData["admin_uuid"] = $uuid;
+        $sendData["bps_user_uid"] = $userID;
+
+        // print_r($sendData);
+        // 送出
+        $userReg = $SysClass->UrlDataPost($APIUrl,$sendData);
+        $userReg = $SysClass->Json2Data($userReg["result"],false);
+        return $userReg;
+    }
+
     // 修改自然人資料
     public function Update_AssUserAction(){
         $SysClass = new ctrlSystem;
