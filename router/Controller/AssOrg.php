@@ -79,7 +79,7 @@ class AssOrgController
     // 以下ORG暫時用不到
     // ---------------------------------------------------------------------
     // 新增自然人資料
-    public function Insert_AssUserAction(){
+    public function Insert_AssOrgAction(){
         $SysClass = new ctrlSystem;
         // 預設不連資料庫
         // $SysClass->initialization();
@@ -91,57 +91,26 @@ class AssOrgController
             $action = array();
             $action["Status"] = false;
             if(!empty($_POST)){
-                $uuid = $_POST["uuid"];
-                $cmid = $_POST["cmid"];
-                $sid = $_POST["sid"];
-                $orgid = $_POST["orgid"];
-                $posid = ($_POST["posid"]) ? $_POST["posid"]:"NULL";
-                $sys_code_id = $_POST["sys_code"];
-                $datec = date("Y/m/d");
-                if($uuid and $cmid and $orgid and $sys_code_id){
-                    // 先檢查有沒有新增過，一個系統僅允許一筆使用者資料
-                    $strSQL = "select * from ass_user where cmid = '".$cmid."' and sys_code_id = '".$sys_code_id."'";
-                    $data = $SysClass->QueryData($strSQL);
-                    $user_ac = $sid;
-                    // 沒有新增，進行新增
-                    if(empty($data)){
-                        $strSQL = "insert into ass_user(cmid, orgid, posid, datec, sys_code_id) ";
-                        $strSQL .= "values('".$cmid."','".$orgid."',".$posid.",'".$datec."','".$sys_code_id."'); ";
+                $officeid = $_POST["officeid"];
+                $faid = $_POST["faid"];
+                $sys_code = $_POST["sys_code"];
+                
+                if($officeid and $faid and $sys_code){
                     
-                        if($SysClass->Execute($strSQL)){
+                    $strSQL = "insert into ass_org(officeid, faid, sys_code_id) ";
+                    $strSQL .= "values('".$officeid."','".$faid."',".$sys_code."); ";
+                
+                    if($SysClass->Execute($strSQL)){
 
-                            $newID = $SysClass->NewInsertID();
-                        // 向帳號中心註冊管理員帳號
-                            $userReg = $this->regUser($SysClass, $sys_code_id, $user_ac, $uuid, $newID);
-
-                            if($userReg["status"]){
-                                $action["Data"] = $newID;
-                                $action["Status"] = true;
-                            }else{
-                                $action["msg"] = '帳號註冊失敗，請重新嘗試';
-                                $action["accenter_msg"] = $userReg["msg"];
-                            }
-
-                        }else{
-                            $action["msg"] = '新增失敗';
-                        }
+                        $newID = $SysClass->NewInsertID();
+                    
+                        $action["Data"] = $newID;
+                        $action["Status"] = true;
                     }else{
-                        // 如果該筆自然人資料已經新增過，則進行帳號中心註冊
-                        $userReg = $this->regUser($SysClass, $sys_code_id, $user_ac, $uuid, $data[0]["uid"]);
-
-                        if($userReg["status"]){
-                            $action["Data"] = $data[0]["uid"];
-                            $action["msg"] = $userReg["msg"];
-                            $action["Status"] = true;
-                        }else{
-                            $action["msg"] = '帳號註冊失敗，請重新嘗試';
-                            $action["accenter_msg"] = $userReg["msg"];
-
-                        }
-
+                        $action["msg"] = '新增失敗';
                     }
                 }else{
-                    $action["msg"] = '參數不可為空'.$sys_code_id;
+                    $action["msg"] = '參數不可為空';
 
                 }
             }else{
@@ -158,26 +127,6 @@ class AssOrgController
         //釋放
         $SysClass = null;
         $this->viewContnet['pageContent'] = $pageContent;
-    }
-
-    // 註冊一般使用者
-    private function regUser($SysClass, $sys_code_id, $user_ac, $uuid, $userID){
-        // 向帳號中心註冊一般使用者帳號
-        $APIUrl = $SysClass->GetAPIUrl('rsApiURL');
-        $APIUrl .= "userRegisteredAPI/registered";
-
-        $sendData = array();
-        $sendData["sys_code_uid"] = $sys_code_id;
-        $sendData["user_ac"] = $user_ac;
-        //密碼與帳號相同
-        $sendData["user_pw"] = $user_ac;
-        $sendData["create_uuid"] = $uuid;
-        $sendData["bps_user_uid"] = $userID;
-        // print_r($sendData);
-        // 送出
-        $userReg = $SysClass->UrlDataPost($APIUrl,$sendData);
-        $userReg = $SysClass->Json2Data($userReg["result"],false);
-        return $userReg;
     }
 
     // 修改自然人資料
@@ -232,8 +181,8 @@ class AssOrgController
         $this->viewContnet['pageContent'] = $pageContent;
     }
 
-    //刪除自然人資料
-    public function Delete_AssUserAction()
+    //刪除組織資料
+    public function Delete_AssOrgAction()
     {
         $SysClass = new ctrlSystem;
         // 預設不連資料庫
@@ -249,7 +198,7 @@ class AssOrgController
             $_DELETE = $SysClass->httpMethodVars();
 
             if(!empty($_DELETE)){
-                $strSQL = "delete from ass_common where uid = '".$_DELETE["iUid"]."'";
+                $strSQL = "delete from ass_org where uid = '".$_DELETE["iUid"]."'";
                 if($SysClass->Execute($strSQL)){
                     $action["Status"] = true;
                     $action["msg"] = '刪除成功';
