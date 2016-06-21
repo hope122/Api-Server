@@ -4,7 +4,7 @@
 */
 use SystemCtrl\ctrlSystem;
 
-class AssUserController
+class AssTypePositionController
 {
     public function indexAction()
     {
@@ -31,8 +31,8 @@ class AssUserController
         $this->viewContnet['pageContent'] = $pageContent;
     }
 
-    // 取得自然人資料
-    public function GetData_AssUserAction(){
+    // 取得組織資料
+    public function GetData_AssTypePositionAction(){
         $SysClass = new ctrlSystem;
         // 預設不連資料庫
         // $SysClass->initialization();
@@ -44,17 +44,14 @@ class AssUserController
             $action = array();
             $action["Status"] = false;
 
-            $strSQL = "select * from ass_user ";
-            // $strSQL .= "left join ass_common_address t2 on t1.uid = t2.cmid ";
+            $strSQL = "select * from ass_type_position ";
             $strSQL .= "where 1 ";
 
             if(!empty($_GET["iUid"])){
                 $strSQL .= "and uid = '".$_GET["iUid"]."' "; 
             }
 
-            // if(!empty($_GET["sys_code"])){
             $strSQL .= "and sys_code_id = '".$_GET["sys_code"]."' "; 
-            // }
 
             $strSQL .= "order by uid asc ";
             $data = $SysClass->QueryData($strSQL);
@@ -64,7 +61,6 @@ class AssUserController
                 $action["Status"] = true;
             }else{
                 $action["msg"] = '沒有資料';
-                // $action["SQL"] = $strSQL;
             }
             $pageContent = $SysClass->Data2Json($action);
         }catch(Exception $error){
@@ -77,7 +73,8 @@ class AssUserController
         $SysClass = null;
         $this->viewContnet['pageContent'] = $pageContent;
     }
-
+    // 以下ORG暫時用不到
+    // ---------------------------------------------------------------------
     // 新增自然人資料
     public function Insert_AssUserAction(){
         $SysClass = new ctrlSystem;
@@ -141,7 +138,7 @@ class AssUserController
 
                     }
                 }else{
-                    $action["msg"] = '參數不可為空';
+                    $action["msg"] = '參數不可為空'.$sys_code_id;
 
                 }
             }else{
@@ -198,7 +195,7 @@ class AssUserController
                 // 修改職務&部門
                 $orgid = $_POST["orgid"];
                 $posid = ($_POST["posid"]) ? $_POST["posid"]:"NULL";
-                $sys_code_id = $_POST["sys_code"];
+                $sys_code_id = $_POST["sys_code_id"];
                 
                 if($uid and $orgid and $sys_code_id){
                     // 改部門方面的
@@ -211,7 +208,6 @@ class AssUserController
 
                     }else{
                         $action["msg"] = '修改失敗';
-                        $action["msg"] = $strSQL;
                     }
                 }else{
                     $action["msg"] = '參數不可為空';
