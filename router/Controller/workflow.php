@@ -21,14 +21,23 @@ class workflowController
                 $sys_code = $_GET["sys_code"];
                 $menu_code = $_GET["menu_code"];
                 $uid = $_GET["uid"];
+                $allData = $_GET["allData"];
 
-                $strSQL = "select t1.uid,t2.name from wf_option t1 ";
+                if($allData){
+                    $strSQL = "select t1.*,t2.name,t4.name as userName, max(t5.layer) as maxLayer from wf_option t1 ";
+                }else{
+                    $strSQL = "select t1.uid,t2.name from wf_option t1 ";
+                }
                 $strSQL .= "left join wf_title t2 on t1.title_id = t2.uid ";
+                $strSQL .= "left join ass_user t3 on t1.creat_user = t3.uid ";
+                $strSQL .= "left join ass_common t4 on t3.cmid = t4.uid ";
+                $strSQL .= "left join wf_layer_data t5 on t5.wf_uid = t1.uid ";
                 $strSQL .= "where t1.sys_code_id = '".$sys_code."' and t1.menu_code = '".$menu_code."' ";
                 if($uid){
                     $strSQL .= "and t1.uid = ".$uid." ";
                 }
                 $strSQL .= "order by t1.uid asc ";
+                // $strSQL .= "group by t5.wf_uid ";
 
                 $data = $SysClass->QueryData($strSQL);
 
