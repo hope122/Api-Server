@@ -29,12 +29,12 @@ class workflow
             }
             $iniFile = $SysClass->GetINIInfo($processFilePath,"",'servername','',true,true);
             // print_r($iniFile);
-            for
+            // for
 
             $strSQL = "select * from wf_option";
             $data = $SysClass->QueryData($strSQL);
             if(!empty($data)){
-
+                print_r($data);
             }else{
                 echo "執行結束";
             }

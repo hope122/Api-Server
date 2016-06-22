@@ -31,8 +31,8 @@ class ApdDataController
         $this->viewContnet['pageContent'] = $pageContent;
     }
 
-    // 取得職務資料
-    public function GetData_ApdDataAction(){
+    // 取得簽核資料的WF資料
+    public function GetData_WorkFlowAction(){
         $SysClass = new ctrlSystem;
         // 預設不連資料庫
         // $SysClass->initialization();
@@ -42,30 +42,48 @@ class ApdDataController
         $SysClass->initialization(null,true);
         try{
             $action = array();
-            $action["Status"] = false;
+            $action["status"] = false;
+            if(!empty($_GET)){
+                $wf_uid = $_GET["wf_uid"];
+                $sys_code = $_GET["sys_code"];
 
-            $strSQL = "select * from apd_option t1 ";
-            $strSQL .= "left join wf_option t2 on t1.wf_uid = t2.uid ";
-            $strSQL .= "left join wf_title t3 on t2.title_id = t3.uid ";
-            $strSQL .= "where 1 ";
+                if($wf_uid and $sys_code){
+                    // $strSQL = "select t2.*,t4.layer,t4.data_uid from apd_option t1 ";
+                    // $strSQL .= "left join wf_option t2 on t1.wf_uid = t2.uid ";
+                    // $strSQL .= "left join wf_title t3 on t3.wf_uid = t1.uid ";
+                    // $strSQL .= "left join wf_layer_data t4 on t2.uid = t4.wf_uid ";
+                    // $strSQL .= "where 1 ";
 
-            if(!empty($_GET["iUid"])){
-                $strSQL .= "and t1.uid = '".$_GET["iUid"]."' "; 
-            }
-            $strSQL .= "and t1.ofid = '".$_GET["iOfid"]."' "; 
-            // if(!empty($_GET["sys_code"])){
-            $strSQL .= "and t1.sys_code_id = '".$_GET["sys_code"]."' "; 
-            // }
+                    // $strSQL .= "and t1.wf_uid = '".$wf_uid."' "; 
+                    // $strSQL .= "and t1.sys_code_id = '".$sys_code."' "; 
+                    
+                    // $strSQL .= "order by t1.uid asc ";
+                    $strSQL = "select t1.*,t2.name as title,t3.layer,t3.data_uid,t5.name as orgName from wf_option t1 ";
+                    $strSQL .= "left join wf_title t2 on t2.wf_uid = t1.uid ";
+                    $strSQL .= "left join wf_layer_data t3 on t1.uid = t3.wf_uid ";
+                    $strSQL .= "left join ass_org t4 on t3.data_uid = t4.uid ";
+                    $strSQL .= "left join ass_type_office t5 on t4.officeid = t5.uid ";
+                    $strSQL .= "where 1 ";
 
-            $strSQL .= "order by t1.uid asc ";
-            $data = $SysClass->QueryData($strSQL);
+                    $strSQL .= "and t1.uid = '".$wf_uid."' "; 
+                    $strSQL .= "and t1.sys_code_id = '".$sys_code."' "; 
+                    
+                    $strSQL .= "order by t1.uid asc ";
+                    $data = $SysClass->QueryData($strSQL);
 
-            if(!empty($data)){
-                $action["Data"] = $data;
-                $action["Status"] = true;
+                    if(!empty($data)){
+                        $action["data"] = $data;
+                        $action["status"] = true;
+                    }else{
+                        $action["msg"] = '沒有資料';
+                        // $action["SQL"] = $strSQL;
+                    }
+                }else{
+                    $action["msg"] = 'wf_uid參數不可為空';
+                }
             }else{
-                $action["msg"] = '沒有資料';
-                // $action["SQL"] = $strSQL;
+                $action["msg"] = '方法不正確';
+
             }
             $pageContent = $SysClass->Data2Json($action);
         }catch(Exception $error){
