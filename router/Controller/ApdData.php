@@ -111,23 +111,58 @@ class ApdDataController
             $action["Status"] = false;
 
             if(!empty($_POST)){
-                $psid = $_POST["psid"];
-                $ofid = $_POST["ofid"];
-                $faid = $_POST["faid"];
+                $doc_uid = $_POST["doc_uid"];
+                $wfID = $_POST["wfID"];
+                $userID = $_POST["userID"];
+                $actionType = ($_POST["actionType"]) ? 1 : 0;
+                $end_date = $_POST["end_date"];
                 $sys_code = $_POST["sys_code"];
-                if($psid and $ofid and $faid and $sys_code){
-                    
-                    $strSQL = "insert into ass_position(psid, ofid, faid, sys_code_id) ";
-                    $strSQL .= "values('".$psid."','".$ofid."',".$faid.",'".$sys_code."'); ";
-                
-                    if($SysClass->Execute($strSQL)){
-                        $newID = $SysClass->NewInsertID();
 
-                        $action["Data"] = $newID;
-                        $action["Status"] = true;
+                if($doc_uid and $wfID and $userID and $end_date and $sys_code){
+                    $strSQL = "select uid from wf_layer_data where wf_uid = '".$wfID."'";
+                    $data = $SysClass->QueryData($strSQL);
+                    if(!empty($data)){
+                        $end_date = strtotime($end_date);
+                        $start_date = time();
+                        // print_r( $end_date . "\n");
+                        // print_r( date("Y-m-d",$end_date) );
+                        $SysClass->Transcation();
+                        $strSQL = "insert into apd_option(doc_uid, wf_uid, sys_code_id, create_user, end_date, action_type, start_date) ";
+
+                        $strSQL .= "values(".$doc_uid.", ".$wfID.", ".$sys_code.", ".$userID.", '".$end_date."', ".$actionType.", '".$start_date."'); ";
+                        // echo $strSQL;
+                        if($SysClass->Execute($strSQL)){
+                            $insertStatus = true;
+                            $newID = $SysClass->NewInsertID();
+                            // $strSQL = "";
+                            foreach ($data as $content) {
+                                $strSQL = "insert into apd_data(apd_uid,wf_layer_id) ";
+                                $strSQL .= "values(".$newID.", ".$content["uid"].");";
+                                if(!$SysClass->Execute($strSQL)){
+                                    $SysClass->Rollback();
+                                    $insertStatus = false;
+                                    break;
+                                }
+                            }
+                            if($insertStatus){
+                                $SysClass->Commit();
+                                $action["msg"] = '新增成功';
+                                $action["Data"] = $newID;
+                                $action["Status"] = true;
+                            }else{
+                                $action["msg"] = '新增失敗';
+
+                            }
+
+                        }else{
+                            $action["msg"] = '新增失敗';
+                        }
+                        
+
                     }else{
-                        $action["msg"] = '新增失敗';
+                        $action["msg"] = '無法查詢流程資料，新增失敗';
                     }
+
                 
                 }else{
                     $action["msg"] = '參數不可為空';

@@ -8,6 +8,22 @@ if(!file_exists($System_APServicePath)){
 include($SystemCtrlPath);
 
 use SystemCtrl\ctrlSystem;
+// 載入process內的PHP檔案
+$processPath = glob( __DIR__ ."\\process\\*.php");
+if(!empty($processPath)){
+    foreach($processPath as $systemApContent){
+        include_once($systemApContent);
+    }
+}else{
+    //先載入各物件
+    $processPath = glob( __DIR__ ."/process/*.php");
+    if(!empty($processPath)){
+        foreach($processPath as $systemApContent){
+            include_once($systemApContent);
+        }
+    }
+}
+
 
 class workflow
 {
@@ -23,18 +39,18 @@ class workflow
         // 連線預設資料庫
         $SysClass->initialization(null,true);
         try{
-            $processFilePath = __DIR__ . '\\workflow.ini';
-            if(!file_exists($processFilePath)){
-                $processFilePath = __DIR__ . '/workflow.ini';
-            }
-            $iniFile = $SysClass->GetINIInfo($processFilePath,"",'servername','',true,true);
+            
             // print_r($iniFile);
             // for
 
             $strSQL = "select * from wf_option";
             $data = $SysClass->QueryData($strSQL);
             if(!empty($data)){
-                print_r($data);
+                // print_r($data);
+                foreach ($data as $content) {
+                    $menuSystem = new $content["menu_code"]();
+                    $menuSystem-> main($SysClass, $content);
+                }
             }else{
                 echo "執行結束";
             }
