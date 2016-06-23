@@ -484,13 +484,16 @@
 		}
 	#modCurl結束
 	#modMail
-		public function Tomail($sender,$recipient,$mailTitle,$msg){
+		public function Tomail($sender,$recipient,$mailTitle,$msg,$titleEncode){
 			if($sender){
 				$sender = "From: ".$sender;
 			}else{
 				$sender = "From: System";
 			}
 			if($recipient and $mailTitle and $msg and $sender){
+				if($titleEncode){
+					$mailTitle = "=?UTF-8?B?".base64_encode($mailTitle)."?=";
+				}
 				if(mail($recipient, $mailTitle, $msg, $sender)){
 					return true;
 				}else{

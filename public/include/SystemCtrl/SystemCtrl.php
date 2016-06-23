@@ -28,6 +28,7 @@
 	use ctrlToolsService\ctrlTools;
 	use ctrlAPISettingService\ctrlAPISetting;
 	use ctrlHttpMethodService\ctrlHttpMethod;
+	use ctrlSocketIOService\ctrlSocketIO;
 
 	//引用完畢
 	
@@ -40,6 +41,8 @@
 		public $ctrlAPISettingService;
 		// Http相關設置
 		public $ctrlHttpMethodService;
+		// socketIO
+		public $ctrlSocketIOService;
 		//ini相關設定
 		public $iniSet;
 		//使用者資訊
@@ -122,6 +125,12 @@
 			$SysClass = new ctrlHttpMethod;
 			$this->ctrlHttpMethodService = $SysClass;
 			$SysClass = null;
+
+			// socketIO
+			$SysClass = new ctrlSocketIO;
+			$this->ctrlSocketIOService = $SysClass;
+			$SysClass = null;
+
 
 		}
 	#檢查ＳＥＳＳＩＯＮ
@@ -374,9 +383,9 @@
 		}
 	#modCurl結束
 	#modMail
-		public function Tomail($sender,$recipient,$mailTitle,$msg){
+		public function Tomail($sender,$recipient,$mailTitle,$msg,$titleEncode = true){
 			//回傳true/false
-			return $this->ctrlToolsService->Tomail($sender,$recipient,$mailTitle,$msg);
+			return $this->ctrlToolsService->Tomail($sender,$recipient,$mailTitle,$msg,$titleEncode);
 		}
 	#modMail結束	
 	
@@ -399,6 +408,16 @@
    		}
     //創建DELETE和PUT的變數 - 結束
    	#ctrlHttpMethodService end
+   	#socketIO
+   		public function setSocket($host = '127.0.0.1', $port = 8080, $address = "/socket.io/?EIO=2", $transport = 'websocket'){
+   			echo "T";
+   			return $this->ctrlSocketIOService->setSocket( $host, $port, $address, $transport );
+   		}
+   		public function socketSend($eventReceived, $sendData){
+   			$sendData = $this->Data2Json($sendData);
+   			return $this->ctrlSocketIOService->send($eventReceived, $sendData );
+   		}
+   	#socketIO結束
 	}
 
 

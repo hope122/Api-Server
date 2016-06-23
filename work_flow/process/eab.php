@@ -1,5 +1,4 @@
 <?php
-
 class eab
 {
     public function main($SysClass, $wfData)
@@ -18,6 +17,11 @@ class eab
             $data = $SysClass -> QueryData($strSQL);
             // 如果不是空的，將執行找到該部門最高的人
             if(!empty($data)){
+                // socketIO 連線
+                $SysClass->setSocket("127.0.0.1",7077);
+
+                // 之後可以改MAIL內容
+                $mailMsg = "文號：1234，尚未審核，請儘速審核";
                 // 這邊用到的data_uid = ass_org uid
                 // 先整理
                 $layerData = array();
@@ -35,7 +39,7 @@ class eab
                 // print_r($layerData[$minLayer]);
                 foreach ($layerData[$minLayer] as $content) {
                     // 開始找聯絡方式
-                    $strSQL = "select t3.remark as mail from ass_user t1 ";
+                    $strSQL = "select t3.remark as mail,t1.uid, t1.sys_code_id from ass_user t1 ";
                     $strSQL .= "left join ass_position t2 on t1.posid = t2.uid ";
                     $strSQL .= "left join ass_common_communication t3 on t1.cmid = t3.cmid ";
                     $strSQL .= "where t1.sys_code_id = '".$content["sys_code_id"]."' ";
@@ -44,6 +48,18 @@ class eab
                     $mail = $SysClass->QueryData($strSQL);
                     if(!empty($mail)){
                         print_r($mail);
+
+                        foreach ($mail as $mailContent) {
+                            $sendData = array();
+                            $sendData['sysCode'] = $mailContent['sys_code_id'];
+                            $sendData['userID'] = $mailContent['uid'];
+                            $sendData['msg'] = $mailMsg;
+
+                            $SysClass -> Tomail("WorkFlowSystem",$mailContent['mail'],"簽核通知",$mailMsg);
+                            $SysClass->socketSend("sysPushSpecified",$sendData);
+
+                        }
+                        
                     }
                     // echo $strSQL."\n";
                 }
@@ -58,5 +74,4 @@ class eab
         //釋放
         $SysClass = null;
     }
-    
 }
