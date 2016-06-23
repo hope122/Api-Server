@@ -37,8 +37,7 @@ class eab
                 // 從最低層級的開始找起
                 $minLayer = min($layer);
                 $today = time();
-                // print_r($layerData[$minLayer]);
-                // exit();
+                
                 foreach ($layerData[$minLayer] as $content) {
                     // 當發現今天已超過結束日期，發通知
                     if($today > $content["end_date"]){
@@ -52,7 +51,6 @@ class eab
                         $mail = $SysClass->QueryData($strSQL);
                         if(!empty($mail)){
                             // print_r($mail);
-
                             foreach ($mail as $mailContent) {
                                 $sendData = array();
                                 $sendData['sysCode'] = $mailContent['sys_code_id'];
@@ -61,12 +59,9 @@ class eab
 
                                 $SysClass -> Tomail("WorkFlowSystem",$mailContent['mail'],"簽核通知",$mailMsg);
                                 $SysClass->socketSend("sysPushSpecified",$sendData);
-
                             }
-                            
                         }
                     }
-                    // echo $strSQL."\n";
                 }
 
             }
