@@ -111,7 +111,7 @@ return array(
         //     'index' => 'POST'
         // )
     ),
-    "SysPushMsg" = array(
+    "SysPushMsg" => array(
         'controller' => 'SysPushMsg',
         'action' => 'index',
         // 針對全部呼叫方法
