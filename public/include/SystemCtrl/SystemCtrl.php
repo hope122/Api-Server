@@ -410,7 +410,6 @@
    	#ctrlHttpMethodService end
    	#socketIO
    		public function setSocket($host = '127.0.0.1', $port = 8080, $address = "/socket.io/?EIO=2", $transport = 'websocket'){
-   			echo "T";
    			return $this->ctrlSocketIOService->setSocket( $host, $port, $address, $transport );
    		}
    		public function socketSend($eventReceived, $sendData){

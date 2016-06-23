@@ -10,7 +10,7 @@ class eab
         // 連線預設資料庫
         // $SysClass->initialization(null,true);
         try{
-            $strSQL = "select t2.*,t3.data_uid,t3.layer,t1.sys_code_id from apd_option t1 ";
+            $strSQL = "select t2.*,t3.data_uid,t3.layer, t1.end_date, t1.sys_code_id from apd_option t1 ";
             $strSQL .= "left join apd_data t2 on t1.uid = t2.apd_uid ";
             $strSQL .= "left join wf_layer_data t3 on t2.wf_layer_id = t3.uid ";
             $strSQL .= "where t1.wf_uid = ".$wfData["uid"]." and t2.status = 0 ";
@@ -36,30 +36,35 @@ class eab
 
                 // 從最低層級的開始找起
                 $minLayer = min($layer);
+                $today = time();
                 // print_r($layerData[$minLayer]);
+                // exit();
                 foreach ($layerData[$minLayer] as $content) {
-                    // 開始找聯絡方式
-                    $strSQL = "select t3.remark as mail,t1.uid, t1.sys_code_id from ass_user t1 ";
-                    $strSQL .= "left join ass_position t2 on t1.posid = t2.uid ";
-                    $strSQL .= "left join ass_common_communication t3 on t1.cmid = t3.cmid ";
-                    $strSQL .= "where t1.sys_code_id = '".$content["sys_code_id"]."' ";
-                    $strSQL .= "and t1.orgid = '".$content["data_uid"]."' ";
-                    $strSQL .= "and t2.faid = 0 and t3.type = 2";
-                    $mail = $SysClass->QueryData($strSQL);
-                    if(!empty($mail)){
-                        print_r($mail);
+                    // 當發現今天已超過結束日期，發通知
+                    if($today > $content["end_date"]){
+                        // 開始找聯絡方式
+                        $strSQL = "select t3.remark as mail,t1.uid, t1.sys_code_id from ass_user t1 ";
+                        $strSQL .= "left join ass_position t2 on t1.posid = t2.uid ";
+                        $strSQL .= "left join ass_common_communication t3 on t1.cmid = t3.cmid ";
+                        $strSQL .= "where t1.sys_code_id = '".$content["sys_code_id"]."' ";
+                        $strSQL .= "and t1.orgid = '".$content["data_uid"]."' ";
+                        $strSQL .= "and t2.faid = 0 and t3.type = 2";
+                        $mail = $SysClass->QueryData($strSQL);
+                        if(!empty($mail)){
+                            // print_r($mail);
 
-                        foreach ($mail as $mailContent) {
-                            $sendData = array();
-                            $sendData['sysCode'] = $mailContent['sys_code_id'];
-                            $sendData['userID'] = $mailContent['uid'];
-                            $sendData['msg'] = $mailMsg;
+                            foreach ($mail as $mailContent) {
+                                $sendData = array();
+                                $sendData['sysCode'] = $mailContent['sys_code_id'];
+                                $sendData['userID'] = $mailContent['uid'];
+                                $sendData['msg'] = $mailMsg;
 
-                            $SysClass -> Tomail("WorkFlowSystem",$mailContent['mail'],"簽核通知",$mailMsg);
-                            $SysClass->socketSend("sysPushSpecified",$sendData);
+                                $SysClass -> Tomail("WorkFlowSystem",$mailContent['mail'],"簽核通知",$mailMsg);
+                                $SysClass->socketSend("sysPushSpecified",$sendData);
 
+                            }
+                            
                         }
-                        
                     }
                     // echo $strSQL."\n";
                 }
