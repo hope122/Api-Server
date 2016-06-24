@@ -4,7 +4,7 @@
 */
 use SystemCtrl\ctrlSystem;
 
-class AssTypePositionController
+class AssTypeOfficeController
 {
     public function indexAction()
     {
@@ -32,7 +32,7 @@ class AssTypePositionController
     }
 
     // 取得組織資料
-    public function GetData_AssTypePositionAction(){
+    public function GetData_AssTypeOfficeAction(){
         $SysClass = new ctrlSystem;
         // 預設不連資料庫
         // $SysClass->initialization();
@@ -44,7 +44,7 @@ class AssTypePositionController
             $action = array();
             $action["Status"] = false;
 
-            $strSQL = "select * from ass_type_position ";
+            $strSQL = "select * from ass_type_office ";
             $strSQL .= "where 1 ";
 
             if(!empty($_GET["iUid"])){
@@ -75,7 +75,7 @@ class AssTypePositionController
     }
     
     // 新增職務資料
-    public function Insert_AssTypePositionAction(){
+    public function Insert_AssTypeOfficeAction(){
         $SysClass = new ctrlSystem;
         // 預設不連資料庫
         // $SysClass->initialization();
@@ -91,7 +91,7 @@ class AssTypePositionController
                 $sys_code_id = $_POST["sys_code"];
                 if($name and $sys_code_id){
                     
-                    $strSQL = "insert into ass_type_position(name, sys_code_id) ";
+                    $strSQL = "insert into ass_type_office(name, sys_code_id) ";
                     $strSQL .= "values('".$name."','".$sys_code_id."'); ";
                 
                     if($SysClass->Execute($strSQL)){
@@ -121,8 +121,8 @@ class AssTypePositionController
         $this->viewContnet['pageContent'] = $pageContent;
     }
 
-    // 修改職務資料
-    public function Update_AssTypePositionAction(){
+    // 修改自然人資料
+    public function Update_AssTypeOfficeAction(){
         $SysClass = new ctrlSystem;
         // 預設不連資料庫
         // $SysClass->initialization();
@@ -139,7 +139,7 @@ class AssTypePositionController
                 if($uid and $name){
                 
                     // 改部門方面的
-                    $strSQL = "update ass_type_position set name='".$name."' ";
+                    $strSQL = "update ass_type_office set name='".$name."' ";
                     $strSQL .= "where uid='".$uid."'; ";
 
                     if($SysClass->Execute($strSQL)){
@@ -170,7 +170,7 @@ class AssTypePositionController
     }
 
     //刪除職務資料
-    public function Delete_AssTypePositionAction()
+    public function Delete_AssTypeOfficeAction()
     {
         $SysClass = new ctrlSystem;
         // 預設不連資料庫
@@ -180,14 +180,13 @@ class AssTypePositionController
         // 連線預設資料庫
         $SysClass->initialization(null,true);
         try{
-            // echo "T";
             $action = array();
             $action["Status"] = false;
             // 先設置好全域變數以取得DELETE相關的部分
             $_DELETE = $SysClass->httpMethodVars();
-            
+
             if(!empty($_DELETE)){
-                $strSQL = "delete from ass_type_position where uid = '".$_DELETE["uid"]."'";
+                $strSQL = "delete from ass_type_office where uid = '".$_DELETE["uid"]."'";
                 if($SysClass->Execute($strSQL)){
                     $action["Status"] = true;
                     $action["msg"] = '刪除成功';

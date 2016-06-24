@@ -121,6 +121,16 @@ return array(
         //     'index' => 'POST'
         // )
     ),
+    "AssTypeOffice" => array(
+        'controller' => 'AssTypeOffice',
+        'action' => 'index',
+        // 針對全部呼叫方法
+        // 'method' => 'POST'
+        // 針對單一Action呼叫方法
+        // 'ActionMethod' => array(
+        //     'index' => 'POST'
+        // )
+    ),
 );
 
 ?>

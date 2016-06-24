@@ -27,6 +27,7 @@
 	use ctrlDBService\ctrDB_MySQL;
 	use ctrlToolsService\ctrlTools;
 	use ctrlAPISettingService\ctrlAPISetting;
+	use ctrlSocketSettingService\ctrlSocketSetting;
 	use ctrlHttpMethodService\ctrlHttpMethod;
 	use ctrlSocketIOService\ctrlSocketIO;
 
@@ -39,6 +40,8 @@
 		public $ctrlToolsService;
 		// API設置工具
 		public $ctrlAPISettingService;
+		// socket設置
+		public $ctrlSocketSettingService;
 		// Http相關設置
 		public $ctrlHttpMethodService;
 		// socketIO
@@ -131,7 +134,10 @@
 			$this->ctrlSocketIOService = $SysClass;
 			$SysClass = null;
 
-
+			// socket setting
+			$SysClass = new ctrlSocketSetting;
+			$this->ctrlSocketSettingService = $SysClass;
+			$SysClass = null;
 		}
 	#檢查ＳＥＳＳＩＯＮ
 		public function CheckLogin(){
@@ -400,6 +406,12 @@
 			return $this->ctrlAPISettingService->GetAPIUrl($iniIndex, $original);
 		}
 	#API Setting 結束
+		
+	#Socket Setting
+		public function GetSocketUrl($iniIndex = "", $original = false){
+			return $this->ctrlSocketSettingService->GetSocketUrl($iniIndex, $original);
+		}
+	#Socket Setting 結束
 
 	#ctrlHttpMethodService
 	//創建DELETE和PUT的變數

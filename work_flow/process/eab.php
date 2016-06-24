@@ -17,8 +17,12 @@ class eab
             $data = $SysClass -> QueryData($strSQL);
             // 如果不是空的，將執行找到該部門最高的人
             if(!empty($data)){
+                // 取得設定檔
+                $socketSet = $SysClass->GetSocketUrl();
+                $socketUrl = $socketSet["server"];
+                $socketPort = $socketSet["port"];
                 // socketIO 連線
-                $SysClass->setSocket("127.0.0.1",7077);
+                $SysClass->setSocket($socketUrl,$socketPort);
 
                 // 之後可以改MAIL內容
                 $mailMsg = "文號：1234，尚未審核，請儘速審核";
