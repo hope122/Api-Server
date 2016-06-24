@@ -61,7 +61,7 @@ class eab
                                 $sendData['userID'] = $mailContent['uid'];
                                 $sendData['msg'] = $mailMsg;
 
-                                $SysClass -> Tomail("WorkFlowSystem@cmsys.wfs.com.tw",$mailContent['mail'],"簽核通知",$mailMsg);
+                                $SysClass -> Tomail("WorkFlowSystem@msa.hinet.net",$mailContent['mail'],"簽核通知",$mailMsg);
                                 $SysClass->socketSend("sysPushSpecified",$sendData);
                             }
                         }
