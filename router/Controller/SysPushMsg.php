@@ -6,6 +6,9 @@ use SystemCtrl\ctrlSystem;
 
 class SysPushMsgController
 {
+    public $push_webMsg;
+    public $push_mail;
+
     public function indexAction()
     {
         $SysClass = new ctrlSystem;
@@ -31,6 +34,7 @@ class SysPushMsgController
         $this->viewContnet['pageContent'] = $pageContent;
     }
 
+    // 單純推播
     public function Push_WebSpecifiedMsgAction()
     {
         $SysClass = new ctrlSystem;
@@ -71,7 +75,7 @@ class SysPushMsgController
             }else{
                 $action['msg'] = "不支援POST以外的方法";
             }
-
+            $this->push_webMsg = $action;
             $pageContent = $SysClass->Data2Json($action);
         }catch(Exception $error){
             //依據Controller, Action補上對應位置, $error->getMessage()為固定部份
@@ -84,7 +88,7 @@ class SysPushMsgController
         $this->viewContnet['pageContent'] = $pageContent;
     }
 
-
+    // 單純寄信
     public function Push_MailAction()
     {
         $SysClass = new ctrlSystem;
@@ -122,7 +126,7 @@ class SysPushMsgController
             }else{
                 $action['msg'] = "不支援POST以外的方法";
             }
-
+            $this->push_mail = $action;
             $pageContent = $SysClass->Data2Json($action);
         }catch(Exception $error){
             //依據Controller, Action補上對應位置, $error->getMessage()為固定部份
@@ -132,6 +136,18 @@ class SysPushMsgController
         // $SysClass->DBClose();
         //釋放
         $SysClass = null;
+        $this->viewContnet['pageContent'] = $pageContent;
+    }
+
+    public function Push_WebMsgAndMailAction(){
+        $this->Push_WebSpecifiedMsgAction();
+        $this->Push_MailAction();
+        
+        $action["status"] = true;
+        $action["mail"] = $this->push_mail;
+        $action["webMsg"] = $this->push_webMsg;
+
+        $pageContent = json_encode($action);
         $this->viewContnet['pageContent'] = $pageContent;
     }
 }
