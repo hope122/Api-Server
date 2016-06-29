@@ -425,7 +425,9 @@
    			return $this->ctrlSocketIOService->setSocket( $host, $port, $address, $transport );
    		}
    		public function socketSend($eventReceived, $sendData){
-   			$sendData = $this->Data2Json($sendData);
+   			if(is_array($sendData)){
+   				$sendData = $this->Data2Json($sendData);
+   			}
    			return $this->ctrlSocketIOService->send($eventReceived, $sendData );
    		}
    	#socketIO結束
