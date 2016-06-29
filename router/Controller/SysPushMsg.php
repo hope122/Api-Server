@@ -77,7 +77,7 @@ class SysPushMsgController
                 
 
             }else{
-                $action['msg'] = "不支援POST以外的方法";
+                $action['msg'] = "POST參數不可為空、或不支援POST以外的方法";
                 $action['requestMethod'] = $_SERVER['REQUEST_METHOD'];
             }
             $this->push_webMsg = $action;
@@ -129,7 +129,7 @@ class SysPushMsgController
                 
 
             }else{
-                $action['msg'] = "不支援POST以外的方法";                                    
+                $action['msg'] = "POST參數不可為空、或不支援POST以外的方法";             
                 $action['requestMethod'] = $_SERVER['REQUEST_METHOD'];
 
             }
