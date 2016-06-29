@@ -62,9 +62,9 @@ class SysPushMsgController
 
                     // 設定要傳送的訊息
                     $sendData = array();
-                    $sendData['sysCode'] = $mailContent['sys_code_id'];
-                    $sendData['userID'] = $mailContent['uid'];
-                    $sendData['msg'] = $mailMsg;
+                    $sendData['sysCode'] = $sysCode;
+                    $sendData['userID'] = $userID;
+                    $sendData['msg'] = $msg;
 
                     $SysClass->socketSend("sysPushSpecified",$sendData);
                     $action["status"] = true;
