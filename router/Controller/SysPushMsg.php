@@ -53,8 +53,12 @@ class SysPushMsgController
                 $userID = $_POST["userID"];
                 $msg = $_POST["msg"];
                 if($sysCode and $userID and $msg){
-                    // scoket連線
-                    $SysClass->setSocket("127.0.0.1",7077);
+                    // 取得設定檔
+                    $socketSet = $SysClass->GetSocketUrl();
+                    $socketUrl = $socketSet["server"];
+                    $socketPort = $socketSet["port"];
+                    // socketIO 連線
+                    $SysClass->setSocket($socketUrl,$socketPort);
 
                     // 設定要傳送的訊息
                     $sendData = array();
@@ -142,7 +146,7 @@ class SysPushMsgController
     public function Push_WebMsgAndMailAction(){
         $this->Push_WebSpecifiedMsgAction();
         $this->Push_MailAction();
-        
+
         $action["status"] = true;
         $action["mail"] = $this->push_mail;
         $action["webMsg"] = $this->push_webMsg;
