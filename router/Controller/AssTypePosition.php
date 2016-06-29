@@ -102,7 +102,7 @@ class AssTypePositionController
                     }
                     
                 }else{
-                    $action["msg"] = '參數不可為空'.$sys_code_id;
+                    $action["msg"] = '參數不可為空';
 
                 }
             }else{
