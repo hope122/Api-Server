@@ -78,6 +78,7 @@ class SysPushMsgController
 
             }else{
                 $action['msg'] = "不支援POST以外的方法";
+                $action['requestMethod'] = $_SERVER['REQUEST_METHOD'];
             }
             $this->push_webMsg = $action;
             $pageContent = $SysClass->Data2Json($action);
@@ -128,7 +129,9 @@ class SysPushMsgController
                 
 
             }else{
-                $action['msg'] = "不支援POST以外的方法";
+                $action['msg'] = "不支援POST以外的方法";                                    
+                $action['requestMethod'] = $_SERVER['REQUEST_METHOD'];
+
             }
             $this->push_mail = $action;
             $pageContent = $SysClass->Data2Json($action);
